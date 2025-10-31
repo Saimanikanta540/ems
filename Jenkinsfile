@@ -2,32 +2,38 @@ pipeline {
     agent any
 
     environment {
-        TOMCAT_WEBAPPS = '/home/karthik/tomcat9/webapps'
-        TOMCAT_MANAGER_URL = 'http://localhost:9090/manager/text'
-        TOMCAT_USER = 'admin'
-        TOMCAT_PASS = 'admin'
-        BACKEND_WAR = 'ems-backend.war'
-        FRONTEND_DIR = 'ems-frontend'
+        TOMCAT_WEBAPPS = "/home/karthik/tomcat9/webapps"
+        TOMCAT_URL = "http://localhost:9090/manager/text"
+        TOMCAT_USER = "admin"
+        TOMCAT_PASS = "admin"
+        BACKEND_CONTEXT = "ems-backend"
+        FRONTEND_CONTEXT = "ems-frontend"
     }
 
     stages {
-        
+
         stage('Checkout') {
             steps {
+                echo "✅ Pulling latest code..."
                 checkout scm
             }
         }
 
         stage('Build Backend') {
             steps {
+                echo "⚙️ Building Spring Boot..."
                 dir('backend') {
-                    sh './mvnw clean package -DskipTests'
+                    sh '''
+                        ./mvnw clean package -DskipTests
+                        mv target/*.war target/ems-backend.war
+                    '''
                 }
             }
         }
 
         stage('Build Frontend') {
             steps {
+                echo "🌐 Building React..."
                 dir('frontend') {
                     sh '''
                         npm install
@@ -39,35 +45,43 @@ pipeline {
 
         stage('Deploy to Tomcat') {
             steps {
+                echo "🚀 Deploying to Tomcat..."
+
                 sh '''
-                    # Stop old versions
-                    curl -s -u ${TOMCAT_USER}:${TOMCAT_PASS} "${TOMCAT_MANAGER_URL}/stop?path=/ems-backend" || true
-                    curl -s -u ${TOMCAT_USER}:${TOMCAT_PASS} "${TOMCAT_MANAGER_URL}/undeploy?path=/ems-backend" || true
-                    curl -s -u ${TOMCAT_USER}:${TOMCAT_PASS} "${TOMCAT_MANAGER_URL}/undeploy?path=/ems-frontend" || true
+                    # stop existing context (ignore first time error)
+                    curl -s -u ${TOMCAT_USER}:${TOMCAT_PASS} "${TOMCAT_URL}/stop?path=/${BACKEND_CONTEXT}" || true
+                    curl -s -u ${TOMCAT_USER}:${TOMCAT_PASS} "${TOMCAT_URL}/undeploy?path=/${BACKEND_CONTEXT}" || true
+                    curl -s -u ${TOMCAT_USER}:${TOMCAT_PASS} "${TOMCAT_URL}/undeploy?path=/${FRONTEND_CONTEXT}" || true
 
-                    # Deploy backend
-                    cp backend/target/*.war ${TOMCAT_WEBAPPS}/${BACKEND_WAR}
+                    # deploy backend WAR
+                    cp backend/target/ems-backend.war ${TOMCAT_WEBAPPS}/ems-backend.war
 
-                    # Deploy frontend
-                    rm -rf ${TOMCAT_WEBAPPS}/${FRONTEND_DIR}
-                    mkdir ${TOMCAT_WEBAPPS}/${FRONTEND_DIR}
-                    cp -r frontend/dist/* ${TOMCAT_WEBAPPS}/${FRONTEND_DIR}/
+                    # deploy frontend
+                    rm -rf ${TOMCAT_WEBAPPS}/${FRONTEND_CONTEXT}
+                    mkdir ${TOMCAT_WEBAPPS}/${FRONTEND_CONTEXT}
+                    cp -r frontend/dist/* ${TOMCAT_WEBAPPS}/${FRONTEND_CONTEXT}/
                 '''
             }
         }
 
         stage('Health Check') {
             steps {
+                echo "🩺 Checking deployment..."
                 sh '''
                     sleep 15
-                    curl -f http://localhost:9090/ems-backend/actuator/health || exit 1
+                    curl -f http://localhost:9090/${BACKEND_CONTEXT}/actuator/health
                 '''
             }
         }
     }
 
     post {
-        success { echo "✅ EMS Deployed Successfully!" }
-        failure { echo "❌ Deployment Failed!" }
+        success {
+            echo "✅ Deployment Successful!"
+        }
+
+        failure {
+            echo "❌ Deployment Failed!"
+        }
     }
 }
