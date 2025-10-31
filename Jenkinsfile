@@ -11,7 +11,8 @@ pipeline {
         TOMCAT_HOME = '/home/karthik/tomcat9'
         TOMCAT_WEBAPPS = '/home/karthik/tomcat9/webapps'
         TOMCAT_MANAGER_URL = 'http://localhost:9090/manager/text'
-        TOMCAT_CREDENTIALS = credentials('tomcat-credentials')
+        TOMCAT_USERNAME = 'admin'
+        TOMCAT_PASSWORD = 'admin'
 
         // Application Configuration
         BACKEND_WAR_NAME = 'ems-backend.war'
@@ -148,12 +149,12 @@ pipeline {
                 // Stop existing applications
                 sh '''
                     # Stop existing applications if running
-                    curl -s -u ${TOMCAT_CREDENTIALS} "${TOMCAT_MANAGER_URL}/stop?path=/ems-backend" || true
-                    curl -s -u ${TOMCAT_CREDENTIALS} "${TOMCAT_MANAGER_URL}/stop?path=/ems-frontend" || true
+                    curl -s -u ${TOMCAT_USERNAME}:${TOMCAT_PASSWORD} "${TOMCAT_MANAGER_URL}/stop?path=/ems-backend" || true
+                    curl -s -u ${TOMCAT_USERNAME}:${TOMCAT_PASSWORD} "${TOMCAT_MANAGER_URL}/stop?path=/ems-frontend" || true
 
                     # Undeploy existing applications
-                    curl -s -u ${TOMCAT_CREDENTIALS} "${TOMCAT_MANAGER_URL}/undeploy?path=/ems-backend" || true
-                    curl -s -u ${TOMCAT_CREDENTIALS} "${TOMCAT_MANAGER_URL}/undeploy?path=/ems-frontend" || true
+                    curl -s -u ${TOMCAT_USERNAME}:${TOMCAT_PASSWORD} "${TOMCAT_MANAGER_URL}/undeploy?path=/ems-backend" || true
+                    curl -s -u ${TOMCAT_USERNAME}:${TOMCAT_PASSWORD} "${TOMCAT_MANAGER_URL}/undeploy?path=/ems-frontend" || true
                 '''
 
                 // Deploy Backend

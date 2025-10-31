@@ -33,12 +33,10 @@ This script will:
 
 In Jenkins web interface (`http://localhost:8080`):
 
-1. Go to **Manage Jenkins → Manage Credentials**
-2. Add new credentials:
-   - **Type**: Username with password
-   - **ID**: `tomcat-credentials`
-   - **Username**: `admin` (Tomcat manager username)
-   - **Password**: Your Tomcat manager password
+1. **Credentials are hardcoded** in Jenkinsfile:
+   - **Username**: `admin`
+   - **Password**: `admin`
+   - (Make sure Tomcat is configured with these credentials)
 
 ### 3. Update Repository URL
 
