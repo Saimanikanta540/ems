@@ -1,0 +1,10 @@
+com/acme/app/repository/PostRepository.class
+com/acme/app/entity/User.class
+com/acme/app/entity/Comment.class
+com/acme/app/controller/CommentController.class
+com/acme/app/repository/UserRepository.class
+com/acme/app/repository/CommentRepository.class
+com/acme/app/AcmeApiApplication.class
+com/acme/app/entity/Post.class
+com/acme/app/controller/AuthController.class
+com/acme/app/controller/PostController.class

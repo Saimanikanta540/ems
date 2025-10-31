@@ -1,0 +1,10 @@
+/home/karthik/ems/backend/src/main/java/com/acme/app/entity/Post.java
+/home/karthik/ems/backend/src/main/java/com/acme/app/controller/CommentController.java
+/home/karthik/ems/backend/src/main/java/com/acme/app/controller/PostController.java
+/home/karthik/ems/backend/src/main/java/com/acme/app/repository/CommentRepository.java
+/home/karthik/ems/backend/src/main/java/com/acme/app/controller/AuthController.java
+/home/karthik/ems/backend/src/main/java/com/acme/app/AcmeApiApplication.java
+/home/karthik/ems/backend/src/main/java/com/acme/app/repository/UserRepository.java
+/home/karthik/ems/backend/src/main/java/com/acme/app/repository/PostRepository.java
+/home/karthik/ems/backend/src/main/java/com/acme/app/entity/Comment.java
+/home/karthik/ems/backend/src/main/java/com/acme/app/entity/User.java
